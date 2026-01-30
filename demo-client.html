@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-It Board - MCP Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-create {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-create:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-list {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-list:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .postit {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .postit:hover {
+            transform: translateY(-5px) rotate(1deg);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+
+        .postit.yellow { background: #fef3c7; }
+        .postit.pink { background: #fce7f3; }
+        .postit.blue { background: #dbeafe; }
+        .postit.green { background: #d1fae5; }
+        .postit.orange { background: #fed7aa; }
+
+        .postit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .postit-id {
+            background: rgba(0,0,0,0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .postit-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+
+        .postit-description {
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+        }
+
+        .postit-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .postit-author {
+            font-size: 0.9em;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .postit-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .status {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #333;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #999;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            color: #1e3a8a;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📌 Post-It Board</h1>
+            <p class="subtitle">MCP Server Demo - Teaching CRUD Operations</p>
+        </header>
+
+        <div class="info-box">
+            <h3>🎓 About This Demo</h3>
+            <p>This is a visual demonstration of an MCP (Model Context Protocol) server. The server provides 5 tools: <strong>create_postit</strong>, <strong>list_postits</strong>, <strong>get_postit</strong>, <strong>update_postit</strong>, and <strong>delete_postit</strong>. Students can connect to this server from Claude or any MCP client!</p>
+        </div>
+
+        <div class="controls">
+            <h2>Create New Post-It</h2>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" placeholder="Enter post-it title...">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" placeholder="Enter post-it description..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="author">Author</label>
+                <input type="text" id="author" placeholder="Your name...">
+            </div>
+            <div class="form-group">
+                <label for="color">Color</label>
+                <select id="color">
+                    <option value="yellow">Yellow</option>
+                    <option value="pink">Pink</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                    <option value="orange">Orange</option>
+                </select>
+            </div>
+            <div class="button-group">
+                <button id="btn-create" class="btn-create" onclick="createPostIt()">➕ Create Post-It</button>
+                <button id="btn-refresh" class="btn-list" onclick="loadPostIts()">🔄 Refresh Board</button>
+            </div>
+        </div>
+
+        <div id="board" class="board"></div>
+
+        <div class="status" id="status">
+            Status: Ready to connect to MCP server...
+        </div>
+    </div>
+
+    <script>
+        const MCP_ENDPOINT = '/mcp';
+
+        function log(message) {
+            const status = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            status.innerHTML = `[${timestamp}] ${message}\n` + status.innerHTML;
+        }
+
+        function setLoading(isLoading) {
+            document.getElementById('btn-create').disabled = isLoading;
+            document.getElementById('btn-refresh').disabled = isLoading;
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            deleteButtons.forEach(btn => btn.disabled = isLoading);
+        }
+
+        async function callMcpTool(toolName, args) {
+            log(`🔧 MCP Tool Call: ${toolName}(${JSON.stringify(args)})`);
+            setLoading(true);
+
+            try {
+                const response = await fetch(MCP_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        mcp_version: "1.0",
+                        type: "call_tool",
+                        params: {
+                            name: toolName,
+                            arguments: args,
+                        },
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.isError || result.content[0].type !== 'text') {
+                    throw new Error(`MCP Error: ${result.content[0].text || 'Unknown error'}`);
+                }
+
+                log(`✅ MCP Success: ${toolName}`);
+                return JSON.parse(result.content[0].text);
+
+            } catch (error) {
+                console.error('MCP call failed:', error);
+                log(`❌ ERROR: ${error.message}`);
+                alert(`An error occurred: ${error.message}`);
+                return null;
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function createPostIt() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const author = document.getElementById('author').value;
+            const color = document.getElementById('color').value;
+
+            if (!title || !description || !author) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            const result = await callMcpTool('create_postit', { title, description, author, color });
+
+            if (result) {
+                // Clear form
+                document.getElementById('title').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('author').value = '';
+                await loadPostIts(); // Refresh the board
+            }
+        }
+
+        async function deletePostIt(id) {
+            if (!confirm(`Are you sure you want to delete Post-It #${id}?`)) {
+                return;
+            }
+            const result = await callMcpTool('delete_postit', { id });
+            if (result && result.success) {
+                await loadPostIts(); // Refresh the board
+            }
+        }
+
+        async function loadPostIts() {
+            const postIts = await callMcpTool('list_postits', {});
+            if (postIts) {
+                renderBoard(postIts);
+            }
+        }
+
+        function renderBoard(postIts) {
+            const board = document.getElementById('board');
+            
+            if (!postIts || postIts.length === 0) {
+                board.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <h3>📝 No Post-Its Yet!</h3>
+                        <p>Create your first post-it note to get started, or click 'Refresh Board'.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by creation date, newest first
+            postIts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            board.innerHTML = postIts.map(postIt => `
+                <div class="postit ${postIt.color}">
+                    <div class="postit-header">
+                        <span class="postit-id">#${postIt.id}</span>
+                    </div>
+                    <div class="postit-title">${escapeHtml(postIt.title)}</div>
+                    <div class="postit-description">${escapeHtml(postIt.description)}</div>
+                    <div class="postit-footer">
+                        <div class="postit-author">— ${escapeHtml(postIt.author)}</div>
+                        <div class="postit-actions">
+                            <button class="btn-small btn-delete" onclick="deletePostIt(${postIt.id})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            log('📡 Post-It Board MCP Client Loaded');
+            log('💡 Connecting to the live MCP server...');
+            loadPostIts();
+        });
+    </script>
+</body>
+</html>
