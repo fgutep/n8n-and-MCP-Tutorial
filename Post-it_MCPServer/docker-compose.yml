@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  postit-mcp:
+    build: .
+    command: node build/server.postits.http.js
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      # Optional:
+      # - CORS_ORIGIN=http://localhost:3000
+      # - ENABLE_DNS_REBINDING_PROTECTION=true
+      # - ALLOWED_HOSTS=localhost,127.0.0.1
+    restart: always
+    ports:
+      - "4000:4000"
