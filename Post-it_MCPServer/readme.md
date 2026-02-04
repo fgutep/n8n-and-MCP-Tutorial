@@ -2,7 +2,7 @@
 
 ## ¿Qué es esto?
 
-Post-it Board MCP es un servidor MCP (Model Context Protocol) didáctico que simula un tablero de notas adhesivas compartido. Es un ejercicio de aprendizaje para entender cómo funcionan los servidores MCP y cómo se integran con clientes como Claude Desktop.
+Post-it Board MCP es un servidor MCP (Model Context Protocol) didáctico que simula un tablero de notas adhesivas compartido. Es un ejercicio de aprendizaje para entender cómo funcionan los servidores MCP y cómo se integran con clientes y n8n.
 
 ## Capacidades
 
@@ -47,9 +47,9 @@ El tablero de post-its ofrece las siguientes funcionalidades a través de herram
 
 Este proyecto es un ejercicio didáctico sobre el protocolo MCP. El código está basado en:
 
-- **Routask MCP Server** - Servidor de gestión de tareas
-- **Logia Hackathon MCP Servers** - Ejemplos de servidores MCP del hackathon
-- **Desarrollado principalmente por**: GPT-4o y Claude Sonnet 4
+- **Routask.com MCP Server** - Servidor de gestión de agendamientos
+- **Logia Hackathon MCP Servers** - [Servidores MCP del hackathon de Voice & Messaging del año pasado](https://github.com/LogIA-hackaton/Logia_Supabase_MCP)
+- **Desarrollado principalmente por**: Felipe Gutierrez, GPT-5.2 y Claude Sonnet 4
 - **Propósito**: Aprendizaje y experimentación con Model Context Protocol
 
 ## Instalación y Uso
